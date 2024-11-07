@@ -1,0 +1,383 @@
+1) Consider a generalization of the binary heap structure where every node
+has 3 children instead of 2. It is an almost complete,3-ary tree, and a node
+must be less than or equal to all its children. Design an array representation
+of the ternary heap and implement delete operation on the same. 
+
+public class BinaryHeap{
+    int[] heap;
+    int size;
+    BinaryHeap(int capacity){
+        this.heap = new int[capacity];
+        this.size = 0;
+    }
+    
+    public void insert(int item){
+        if(size==heap.length){
+            System.out.println("Error");
+            return;
+        }
+        heap[size] = item;
+        size++;
+        heapifyup(size-1);
+    }
+    
+    public void heapifyup(int index){
+        int parent;
+        while(index > 0){
+            parent = (index - 1)/3;
+            if(heap[parent] > heap[index]){
+                swap(parent, index);
+                index = parent;
+            }
+            else{
+                break;
+            }
+        }
+    }
+    
+    public void heapifydown(int index){
+        while(true){
+            int left = 3 * index + 1;
+            int middle = 3 * index + 2;
+            int right = 3 * index + 3;
+            int smallest = index;
+            if(left < size && heap[left] <  heap[smallest]) smallest = left;
+            if(middle < size && heap[middle] <  heap[middle]) middle = left;
+            if(right < size && heap[right] <  heap[right]) right = left;
+            if(smallest!=index){
+                swap(smallest,index);
+                index=smallest;
+            }
+            else{
+                break;
+            }
+            
+        }
+    }
+    
+    public void delete(int item){
+        if(size==0){
+            throw new IllegalStateException("Heap is empty");
+        }
+        int temp = find(item);
+        heap[temp] = heap[size-1];
+        size--;
+        heapifydown(temp);
+    }
+    
+    public int find(int item){
+        for(int i=0;i<size;i++){
+            if(heap[i]==item){
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public void printless(int item){
+        for(int i=0; i<size; i++){
+            if(heap[i] < item){
+                System.out.print(heap[i] + " ");
+            }
+        }
+        System.out.println();
+    }
+    
+    private void swap(int a, int b){
+        int temp = heap[a];
+        heap[a] = heap[b];
+        heap[b] = temp;
+    }
+    
+    public void print(){
+        for(int i=0; i<size; i++){
+            System.out.print(heap[i] + " ");
+        }
+        System.out.println();
+    }
+    
+    
+    
+    public static void main(String args[]){
+        BinaryHeap heap = new BinaryHeap(10);
+        heap.insert(10);
+        heap.insert(20);
+        heap.insert(40);
+        heap.insert(30);
+        heap.insert(50);
+        heap.print();
+        heap.printless(30);
+        heap.delete(40);
+        heap.print();
+    }
+}
+
+2. Write a program to print all nodes less than some value X in a given binary heap.
+
+public class BinaryHeap{
+    int[] heap;
+    int size;
+    BinaryHeap(int capacity){
+        this.heap = new int[capacity];
+        this.size = 0;
+    }
+    
+    public void insert(int item){
+        if(size==heap.length){
+            System.out.println("Error");
+            return;
+        }
+        heap[size] = item;
+        size++;
+        heapifyup(size-1);
+    }
+    
+    public void heapifyup(int index){
+        int parent;
+        while(index > 0){
+            parent = (index - 1)/3;
+            if(heap[parent] > heap[index]){
+                swap(parent, index);
+                index = parent;
+            }
+            else{
+                break;
+            }
+        }
+    }
+    
+    
+    public void printless(int item){
+        for(int i=0; i<size; i++){
+            if(heap[i] < item){
+                System.out.print(heap[i] + " ");
+            }
+        }
+        System.out.println();
+    }
+    
+    private void swap(int a, int b){
+        int temp = heap[a];
+        heap[a] = heap[b];
+        heap[b] = temp;
+    }
+    
+    public void print(){
+        for(int i=0; i<size; i++){
+            System.out.print(heap[i] + " ");
+        }
+        System.out.println();
+    }
+    
+    
+    
+    public static void main(String args[]){
+        BinaryHeap heap = new BinaryHeap(10);
+        heap.insert(10);
+        heap.insert(20);
+        heap.insert(40);
+        heap.insert(30);
+        heap.insert(50);
+        heap.print();
+        heap.printless(30);
+    }
+}
+
+3. Implement Delete Min, Delete Max and Insert operation in a MIN-MAX Heap.
+
+public class MinMaxHeap {
+    private int[] heap;
+    private int size;
+    private static final int DEFAULT_CAPACITY = 10;
+
+    public MinMaxHeap() {
+        heap = new int[DEFAULT_CAPACITY];
+        size = 0;
+    }
+
+    public void insert(int value) {
+        if (size == heap.length) {
+            expandHeap();
+        }
+        heap[size] = value;
+        size++;
+        bubbleUp(size - 1);
+    }
+
+    public int deleteMin() {
+        if (size == 0) {
+            throw new IllegalStateException("Heap is empty");
+        }
+        int min = heap[0];
+        heap[0] = heap[size - 1];
+        size--;
+        trickleDown(0);
+        return min;
+    }
+
+    public int deleteMax() {
+        if (size == 0) {
+            throw new IllegalStateException("Heap is empty");
+        }
+
+        int maxIndex;
+        if (size == 1) {
+            maxIndex = 0;
+        } else if (size == 2) {
+            maxIndex = 1;
+        } else {
+            maxIndex = (heap[1] > heap[2]) ? 1 : 2;
+        }
+
+        int max = heap[maxIndex];
+        heap[maxIndex] = heap[size - 1];
+        size--;
+        trickleDown(maxIndex);
+        return max;
+    }
+
+    private void bubbleUp(int index) {
+        if (index == 0) return; // Root node, no need to bubble up
+
+        int parentIndex = (index - 1) / 2;
+
+        if (isMinLevel(index)) {
+            if (heap[index] > heap[parentIndex]) {
+                swap(index, parentIndex);
+                bubbleUpMax(parentIndex);
+            } else {
+                bubbleUpMin(index);
+            }
+        } else {
+            if (heap[index] < heap[parentIndex]) {
+                swap(index, parentIndex);
+                bubbleUpMin(parentIndex);
+            } else {
+                bubbleUpMax(index);
+            }
+        }
+    }
+
+    private void bubbleUpMin(int index) {
+        int grandparent = (index - 1) / 4;
+        if (grandparent >= 0 && heap[index] < heap[grandparent]) {
+            swap(index, grandparent);
+            bubbleUpMin(grandparent);
+        }
+    }
+
+    private void bubbleUpMax(int index) {
+        int grandparent = (index - 1) / 4;
+        if (grandparent >= 0 && heap[index] > heap[grandparent]) {
+            swap(index, grandparent);
+            bubbleUpMax(grandparent);
+        }
+    }
+
+    private void trickleDown(int index) {
+        if (isMinLevel(index)) {
+            trickleDownMin(index);
+        } else {
+            trickleDownMax(index);
+        }
+    }
+
+    private void trickleDownMin(int index) {
+        int smallest = index;
+        int left = 3 * index + 1;
+        int middle = 3 * index + 2;
+        int right = 3 * index + 3;
+
+        if (left < size && heap[left] < heap[smallest]) smallest = left;
+        if (middle < size && heap[middle] < heap[smallest]) smallest = middle;
+        if (right < size && heap[right] < heap[smallest]) smallest = right;
+
+        for (int child : new int[]{3 * left + 1, 3 * left + 2, 3 * left + 3, 3 * middle + 1, 3 * middle + 2, 3 * middle + 3, 3 * right + 1, 3 * right + 2, 3 * right + 3}) {
+            if (child < size && heap[child] < heap[smallest]) {
+                smallest = child;
+            }
+        }
+
+        if (smallest != index) {
+            swap(index, smallest);
+            if (smallest >= left && smallest <= right && heap[smallest] > heap[(index - 1) / 2]) {
+                swap(smallest, (index - 1) / 2);
+            }
+            trickleDownMin(smallest);
+        }
+    }
+
+    private void trickleDownMax(int index) {
+        int largest = index;
+        int left = 3 * index + 1;
+        int middle = 3 * index + 2;
+        int right = 3 * index + 3;
+
+        if (left < size && heap[left] > heap[largest]) largest = left;
+        if (middle < size && heap[middle] > heap[largest]) largest = middle;
+        if (right < size && heap[right] > heap[largest]) largest = right;
+
+        for (int child : new int[]{3 * left + 1, 3 * left + 2, 3 * left + 3, 3 * middle + 1, 3 * middle + 2, 3 * middle + 3, 3 * right + 1, 3 * right + 2, 3 * right + 3}) {
+            if (child < size && heap[child] > heap[largest]) {
+                largest = child;
+            }
+        }
+
+        if (largest != index) {
+            swap(index, largest);
+            if (largest >= left && largest <= right && heap[largest] < heap[(index - 1) / 2]) {
+                swap(largest, (index - 1) / 2);
+            }
+            trickleDownMax(largest);
+        }
+    }
+
+    private boolean isMinLevel(int index) {
+        return (int) (Math.log(index + 1) / Math.log(2)) % 2 == 0;
+    }
+
+    private void swap(int i, int j) {
+        int temp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = temp;
+    }
+
+    private void expandHeap() {
+        int[] newHeap = new int[heap.length * 2];
+        System.arraycopy(heap, 0, newHeap, 0, heap.length);
+        heap = newHeap;
+    }
+
+    public void printHeap() {
+        System.out.print("Heap: ");
+        for (int i = 0; i < size; i++) {
+            System.out.print(heap[i] + " ");
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        MinMaxHeap minMaxHeap = new MinMaxHeap();
+
+        minMaxHeap.insert(8);
+        minMaxHeap.insert(35);
+        minMaxHeap.insert(27);
+        minMaxHeap.insert(12);
+        minMaxHeap.insert(28);
+        minMaxHeap.insert(14);
+        minMaxHeap.insert(9);
+        minMaxHeap.insert(26);
+        minMaxHeap.insert(22);
+        minMaxHeap.insert(30);
+        minMaxHeap.insert(50);
+        minMaxHeap.insert(5);
+
+        minMaxHeap.printHeap();
+
+        System.out.println("Deleted Min: " + minMaxHeap.deleteMin());
+        minMaxHeap.printHeap();
+
+        System.out.println("Deleted Max: " + minMaxHeap.deleteMax());
+        minMaxHeap.printHeap();
+    }
+}
