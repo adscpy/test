@@ -1,0 +1,101 @@
+package t7;
+
+import java.util.Scanner;
+
+class BinaryMaxHeapDS {
+
+    public static int heapSize;
+
+    private static int left(int index) {
+        return 2 * index + 1;
+    }
+
+    private static int right(int index) {
+        return 2 * index + 2;
+    }
+
+    private static void swap(int[] arr, int a, int b) {
+        int temp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = temp;
+    }
+
+    public static void printNodesLessThanX(int[] arr, int X, int index) {
+        if (index >= heapSize) return;
+
+        if (arr[index] < X) {
+            System.out.println(arr[index]);
+
+            printNodesLessThanX(arr, X, (2 * index + 1));
+
+            printNodesLessThanX(arr, X, (2 * index + 2));
+        }
+    }
+
+    private static void maxHeapifyStepDownIterative(int[] arr, int i) {
+        while (true) {
+            int smallestValueIndex = i;
+            int leftChildIndex = left(i);
+            int rightChildIndex = right(i);
+
+            if (leftChildIndex < heapSize && arr[leftChildIndex] < arr[smallestValueIndex])
+                smallestValueIndex = leftChildIndex;
+
+            if (rightChildIndex < heapSize && arr[rightChildIndex] < arr[smallestValueIndex])
+                smallestValueIndex = rightChildIndex;
+
+            // If the largest value is still the current node, the heap property is restored
+            if (smallestValueIndex == i) {
+                break;
+            }
+
+            // Swap the current node with the largest child
+            swap(arr, i, smallestValueIndex);
+
+            // Move down to the child node
+            i = smallestValueIndex;
+        }
+    }
+
+    public static void buildMaxHeap(int[] arr, int n) {
+
+        heapSize = n;
+
+        int startIndex = (n / 2) - 1;
+
+        for (int i = startIndex; i >= 0; i--) {
+            maxHeapifyStepDownIterative(arr, i);
+        }
+    }
+
+    public static void printHeap(int[] arr) {
+
+        if (heapSize == 0) {
+            System.err.println("Oops!! heap is empty!!");
+            return;
+        }
+
+        for (int i = 0; i < heapSize; i++) {
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
+    }
+
+}
+
+public class printAllNodesLessThanK {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++)
+            arr[i] = sc.nextInt();
+
+        BinaryMaxHeapDS.buildMaxHeap(arr, n);
+        BinaryMaxHeapDS.printHeap(arr);
+
+        BinaryMaxHeapDS.printNodesLessThanX(arr, 45, 0);
+
+        sc.close();
+    }
+}
